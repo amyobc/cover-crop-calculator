@@ -1,0 +1,1107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Perennial Cover Crop ROI Calculator — Oakville Bluegrass Cooperative</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Source+Sans+3:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --soil: #2C1810;
+    --earth: #5C3D2E;
+    --clay: #8B5E3C;
+    --wheat: #C8A96E;
+    --straw: #E8D5A3;
+    --cream: #F7F2E8;
+    --leaf: #4A7C59;
+    --moss: #2D5016;
+    --sage: #7BA05B;
+    --sky: #4A7FA5;
+    --sun: #D4A017;
+    --harvest: #B85C38;
+    --white: #FEFCF8;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Source Sans 3', sans-serif;
+    background: var(--cream);
+    color: var(--soil);
+    min-height: 100vh;
+  }
+
+  /* Header */
+  .header {
+    background: var(--moss);
+    padding: 0;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .header-texture {
+    position: absolute; inset: 0;
+    background-image: repeating-linear-gradient(
+      45deg,
+      transparent,
+      transparent 10px,
+      rgba(255,255,255,0.02) 10px,
+      rgba(255,255,255,0.02) 20px
+    );
+  }
+
+  .header-inner {
+    position: relative;
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 40px 32px 36px;
+  }
+
+  .coop-badge {
+    display: inline-block;
+    background: rgba(200,169,110,0.2);
+    border: 1px solid var(--wheat);
+    color: var(--straw);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 5px 14px;
+    border-radius: 2px;
+    margin-bottom: 16px;
+  }
+
+  .header h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(26px, 4vw, 38px);
+    font-weight: 700;
+    color: var(--white);
+    line-height: 1.2;
+    margin-bottom: 10px;
+  }
+
+  .header h1 span {
+    color: var(--wheat);
+  }
+
+  .header-sub {
+    color: rgba(232,213,163,0.75);
+    font-size: 15px;
+    font-weight: 300;
+    max-width: 560px;
+    line-height: 1.6;
+  }
+
+  .header-decoration {
+    position: absolute;
+    right: 32px;
+    bottom: -1px;
+    font-size: 80px;
+    opacity: 0.07;
+    line-height: 1;
+    filter: grayscale(1);
+  }
+
+  /* Main layout */
+  .main {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 36px 32px 60px;
+  }
+
+  /* Section styles */
+  .section {
+    background: var(--white);
+    border: 1px solid rgba(92,61,46,0.12);
+    border-radius: 6px;
+    margin-bottom: 20px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(44,24,16,0.06);
+  }
+
+  .section-header {
+    background: var(--soil);
+    color: var(--straw);
+    padding: 14px 24px;
+    font-family: 'Playfair Display', serif;
+    font-size: 16px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .section-header .step {
+    background: var(--wheat);
+    color: var(--soil);
+    width: 24px; height: 24px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px;
+    font-weight: 700;
+    font-family: 'Source Sans 3', sans-serif;
+    flex-shrink: 0;
+  }
+
+  .section-body {
+    padding: 24px;
+  }
+
+  /* Form controls */
+  .field-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 18px;
+  }
+
+  .field-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  label {
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    color: var(--earth);
+  }
+
+  input[type="number"],
+  select {
+    width: 100%;
+    padding: 10px 14px;
+    border: 1.5px solid rgba(92,61,46,0.2);
+    border-radius: 4px;
+    background: var(--cream);
+    color: var(--soil);
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 15px;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    appearance: none;
+    -webkit-appearance: none;
+  }
+
+  input[type="number"]:focus,
+  select:focus {
+    outline: none;
+    border-color: var(--leaf);
+    box-shadow: 0 0 0 3px rgba(74,124,89,0.12);
+  }
+
+  select {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%235C3D2E' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 14px center;
+    padding-right: 36px;
+    cursor: pointer;
+  }
+
+  .field-note {
+    font-size: 11.5px;
+    color: var(--clay);
+    line-height: 1.4;
+  }
+
+  /* Crop selector */
+  .crop-selector {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+  }
+
+  .crop-option {
+    border: 2px solid rgba(92,61,46,0.15);
+    border-radius: 6px;
+    padding: 18px 20px;
+    cursor: pointer;
+    transition: all 0.2s;
+    background: var(--cream);
+    position: relative;
+  }
+
+  .crop-option:hover {
+    border-color: var(--leaf);
+    background: rgba(74,124,89,0.05);
+  }
+
+  .crop-option.selected {
+    border-color: var(--leaf);
+    background: rgba(74,124,89,0.08);
+    box-shadow: 0 0 0 1px var(--leaf);
+  }
+
+  .crop-option input[type="radio"] {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .crop-icon {
+    font-size: 28px;
+    margin-bottom: 8px;
+    display: block;
+  }
+
+  .crop-name {
+    font-family: 'Playfair Display', serif;
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--soil);
+    display: block;
+    margin-bottom: 4px;
+  }
+
+  .crop-detail {
+    font-size: 12px;
+    color: var(--clay);
+    line-height: 1.4;
+  }
+
+  /* Toggle switches */
+  .toggle-group {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 14px 16px;
+    border: 1.5px solid rgba(92,61,46,0.12);
+    border-radius: 5px;
+    background: rgba(232,213,163,0.15);
+    cursor: pointer;
+    transition: all 0.2s;
+    margin-bottom: 12px;
+  }
+
+  .toggle-group:last-child { margin-bottom: 0; }
+
+  .toggle-group:hover {
+    border-color: var(--leaf);
+    background: rgba(74,124,89,0.05);
+  }
+
+  .toggle-switch {
+    position: relative;
+    width: 42px;
+    height: 24px;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+
+  .toggle-switch input { opacity: 0; width: 0; height: 0; }
+
+  .toggle-track {
+    position: absolute;
+    inset: 0;
+    background: rgba(92,61,46,0.2);
+    border-radius: 12px;
+    transition: background 0.25s;
+    cursor: pointer;
+  }
+
+  .toggle-track::after {
+    content: '';
+    position: absolute;
+    top: 3px; left: 3px;
+    width: 18px; height: 18px;
+    border-radius: 50%;
+    background: white;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.25);
+    transition: transform 0.25s;
+  }
+
+  input:checked + .toggle-track {
+    background: var(--leaf);
+  }
+
+  input:checked + .toggle-track::after {
+    transform: translateX(18px);
+  }
+
+  .toggle-info {
+    flex: 1;
+  }
+
+  .toggle-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--soil);
+    margin-bottom: 3px;
+  }
+
+  .toggle-desc {
+    font-size: 12px;
+    color: var(--clay);
+    line-height: 1.45;
+  }
+
+  .toggle-amount {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--leaf);
+    white-space: nowrap;
+  }
+
+  /* Results panel */
+  .results-panel {
+    background: var(--moss);
+    border-radius: 6px;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(44,24,16,0.15);
+    margin-top: 8px;
+  }
+
+  .results-header {
+    background: var(--soil);
+    padding: 20px 28px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .results-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 18px;
+    color: var(--white);
+    font-weight: 600;
+  }
+
+  .results-crop-badge {
+    background: var(--wheat);
+    color: var(--soil);
+    font-size: 12px;
+    font-weight: 700;
+    padding: 4px 12px;
+    border-radius: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+  }
+
+  .results-body {
+    padding: 28px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+  }
+
+  @media (max-width: 600px) {
+    .results-body { grid-template-columns: 1fr 1fr; }
+    .crop-selector { grid-template-columns: 1fr; }
+    .main { padding: 20px 16px 48px; }
+    .section-body { padding: 16px; }
+    .field-grid { grid-template-columns: 1fr; }
+    .header-inner { padding: 28px 20px 24px; }
+  }
+
+  .result-card {
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 5px;
+    padding: 16px 18px;
+  }
+
+  .result-label {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: rgba(232,213,163,0.65);
+    margin-bottom: 6px;
+  }
+
+  .result-value {
+    font-family: 'Playfair Display', serif;
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--white);
+    line-height: 1.1;
+  }
+
+  .result-value.positive { color: #A8D5A2; }
+  .result-value.negative { color: #F4A27B; }
+
+  .result-sub {
+    font-size: 12px;
+    color: rgba(232,213,163,0.55);
+    margin-top: 4px;
+    line-height: 1.4;
+  }
+
+  .result-card.highlight {
+    background: rgba(200,169,110,0.15);
+    border-color: rgba(200,169,110,0.35);
+  }
+
+  .result-card.highlight .result-value {
+    color: var(--wheat);
+    font-size: 28px;
+  }
+
+  /* Breakdown section */
+  .breakdown {
+    padding: 0 28px 28px;
+  }
+
+  .breakdown-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 14px;
+    color: rgba(232,213,163,0.8);
+    margin-bottom: 14px;
+    padding-top: 4px;
+    border-top: 1px solid rgba(255,255,255,0.08);
+    padding-top: 18px;
+    letter-spacing: 0.3px;
+  }
+
+  .breakdown-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 7px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    font-size: 13.5px;
+  }
+
+  .breakdown-row:last-child { border-bottom: none; }
+
+  .breakdown-label {
+    color: rgba(232,213,163,0.7);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .breakdown-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .breakdown-amount {
+    font-weight: 600;
+    font-family: 'Source Sans 3', sans-serif;
+  }
+
+  .breakdown-amount.cost { color: #F4A27B; }
+  .breakdown-amount.savings { color: #A8D5A2; }
+
+  .breakdown-total {
+    display: flex;
+    justify-content: space-between;
+    padding: 12px 0 0;
+    margin-top: 8px;
+    border-top: 1.5px solid rgba(200,169,110,0.3);
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--wheat);
+  }
+
+  /* Benefits callout */
+  .benefits-strip {
+    background: rgba(74,127,165,0.12);
+    border: 1px solid rgba(74,127,165,0.25);
+    border-radius: 5px;
+    padding: 16px 18px;
+    margin: 0 28px 28px;
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .benefits-icon { font-size: 20px; flex-shrink: 0; }
+
+  .benefits-text {
+    font-size: 12.5px;
+    color: rgba(232,213,163,0.75);
+    line-height: 1.55;
+  }
+
+  .benefits-text strong {
+    color: rgba(232,213,163,1);
+    font-weight: 600;
+  }
+
+  /* Source note */
+  .source-note {
+    font-size: 11px;
+    color: var(--clay);
+    margin-top: 20px;
+    padding: 12px 16px;
+    background: rgba(92,61,46,0.05);
+    border-radius: 4px;
+    border-left: 3px solid var(--wheat);
+    line-height: 1.6;
+  }
+
+  .source-note a {
+    color: var(--leaf);
+    text-decoration: none;
+  }
+
+  .source-note a:hover {
+    text-decoration: underline;
+  }
+
+  /* County data table */
+  .county-info {
+    font-size: 12px;
+    color: var(--clay);
+    margin-top: 6px;
+    padding: 8px 12px;
+    background: rgba(92,61,46,0.05);
+    border-radius: 4px;
+    display: none;
+  }
+
+  .county-info.visible { display: block; }
+
+  /* Animate in */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .results-panel {
+    animation: fadeUp 0.4s ease both;
+  }
+
+  .hidden { display: none; }
+
+  /* ROI indicator */
+  .roi-meter {
+    height: 6px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 3px;
+    margin-top: 8px;
+    overflow: hidden;
+  }
+
+  .roi-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--sage), #A8D5A2);
+    border-radius: 3px;
+    transition: width 0.5s ease;
+  }
+</style>
+</head>
+<body>
+
+<header class="header">
+  <div class="header-texture"></div>
+  <div class="header-inner">
+    <div class="coop-badge">Oakville Bluegrass Cooperative</div>
+    <h1>Perennial Cover Crop<br><span>ROI Calculator</span></h1>
+    <p class="header-sub">Estimate the economic return of establishing perennial ground cover on your operation, including available program incentives.</p>
+    <div class="header-decoration">🌾</div>
+  </div>
+</header>
+
+<main class="main">
+
+  <!-- Step 1: Crop Type -->
+  <div class="section">
+    <div class="section-header">
+      <div class="step">1</div>
+      Select Your Primary Crop
+    </div>
+    <div class="section-body">
+      <div class="crop-selector">
+
+        <label class="crop-option selected" id="grapes-card">
+          <input type="radio" name="crop" value="grapes" checked onchange="updateCropUI()">
+          <span class="crop-icon">🍇</span>
+          <span class="crop-name">Wine Grapes</span>
+          <span class="crop-detail">Select your county below for region-specific yield and price data from UC Davis cost studies.</span>
+        </label>
+
+        <label class="crop-option" id="almonds-card">
+          <input type="radio" name="crop" value="almonds" onchange="updateCropUI()">
+          <span class="crop-icon">🌰</span>
+          <span class="crop-name">Almonds</span>
+          <span class="crop-detail">Select your county below for region-specific yield and price data from UC Davis cost studies.</span>
+        </label>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Step 2: Farm Details -->
+  <div class="section">
+    <div class="section-header">
+      <div class="step">2</div>
+      Your Farm Details
+    </div>
+    <div class="section-body">
+      <div class="field-grid">
+
+        <div class="field-group">
+          <label for="county">County</label>
+          <select id="county" onchange="updateCountyInfo(); calculate()">
+            <optgroup label="Wine Grape Counties">
+              <option value="napa">Napa</option>
+              <option value="sonoma">Sonoma</option>
+              <option value="mendocino">Mendocino</option>
+              <option value="san-luis-obispo">San Luis Obispo</option>
+              <option value="santa-barbara">Santa Barbara</option>
+              <option value="lodi-san-joaquin">San Joaquin (Lodi)</option>
+            </optgroup>
+            <optgroup label="Almond Counties">
+              <option value="fresno">Fresno</option>
+              <option value="kern">Kern</option>
+              <option value="kings">Kings</option>
+              <option value="madera">Madera</option>
+              <option value="merced">Merced</option>
+              <option value="stanislaus">Stanislaus</option>
+              <option value="tulare">Tulare</option>
+              <option value="butte">Butte (Sacramento Valley)</option>
+              <option value="colusa">Colusa (Sacramento Valley)</option>
+              <option value="glenn">Glenn (Sacramento Valley)</option>
+              <option value="tehama">Tehama (Sacramento Valley)</option>
+            </optgroup>
+          </select>
+          <div class="county-info" id="county-info"></div>
+        </div>
+
+        <div class="field-group">
+          <label for="acres">Total Acres in Cover Crop</label>
+          <input type="number" id="acres" value="50" min="1" max="5000" onchange="calculate()" oninput="calculate()">
+          <span class="field-note">Acres you plan to establish with perennial cover</span>
+        </div>
+
+        <div class="field-group" id="yield-group">
+          <label for="yield" id="yield-label">Yield (tons/acre)</label>
+          <input type="number" id="yield" value="4.5" min="0.5" max="20" step="0.5" onchange="calculate()" oninput="calculate()">
+          <span class="field-note" id="yield-note">Average annual yield per acre</span>
+        </div>
+
+        <div class="field-group" id="price-group">
+          <label for="price" id="price-label">Price per Ton ($)</label>
+          <input type="number" id="price" value="1800" min="100" onchange="calculate()" oninput="calculate()">
+          <span class="field-note" id="price-note">Your expected price per ton</span>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Step 3: Available Incentive Programs -->
+  <div class="section">
+    <div class="section-header">
+      <div class="step">3</div>
+      Available Incentive Programs
+    </div>
+    <div class="section-body">
+
+      <label class="toggle-group" for="amp-toggle">
+        <div class="toggle-switch">
+          <input type="checkbox" id="amp-toggle" checked onchange="calculate()">
+          <div class="toggle-track"></div>
+        </div>
+        <div class="toggle-info">
+          <div class="toggle-title">USDA Advancing Markets for Producers (AMP)</div>
+          <div class="toggle-desc">Covers the full cost of the first 10 acres at $375/acre, then an additional $100/acre credit for up to 100 more acres. Applies to perennial cover crop establishment as a climate-smart practice.</div>
+        </div>
+        <div class="toggle-amount">Up to $13,750</div>
+      </label>
+
+      <label class="toggle-group" for="csrp-toggle">
+        <div class="toggle-switch">
+          <input type="checkbox" id="csrp-toggle" onchange="calculate()">
+          <div class="toggle-track"></div>
+        </div>
+        <div class="toggle-info">
+          <div class="toggle-title">California Soil Restoration Project (CSRP)</div>
+          <div class="toggle-desc">$100/acre <strong style="color:var(--leaf)">recurring annual payment</strong> for each year the perennial cover is maintained in place. Stackable with AMP (verify program requirements before combining).</div>
+        </div>
+        <div class="toggle-amount">$100/acre/yr</div>
+      </label>
+
+    </div>
+  </div>
+
+  <!-- Step 4: Agronomic Benefits (Optional) -->
+  <div class="section">
+    <div class="section-header">
+      <div class="step">4</div>
+      Estimated Agronomic Benefits
+    </div>
+    <div class="section-body">
+      <p style="font-size:13px; color:var(--clay); margin-bottom: 16px; line-height:1.5;">Perennial cover crops can provide measurable on-farm benefits. Include or exclude these estimates as you see fit — they are based on published research and UC Cooperative Extension data.</p>
+      <div class="field-grid">
+
+        <div class="field-group">
+          <label for="water-savings">Water Cost Savings ($/acre/yr)</label>
+          <input type="number" id="water-savings" value="45" min="0" onchange="calculate()" oninput="calculate()">
+          <span class="field-note">Cover crops can reduce water needs 10–20%; UC Davis studies cite $200/acre-foot irrigation costs</span>
+        </div>
+
+        <div class="field-group">
+          <label for="weed-savings">Reduced Weed Control ($/acre/yr)</label>
+          <input type="number" id="weed-savings" value="60" min="0" onchange="calculate()" oninput="calculate()">
+          <span class="field-note">Reduction in herbicide applications and mowing passes</span>
+        </div>
+
+        <div class="field-group">
+          <label for="yield-bump">Yield Benefit (% increase)</label>
+          <input type="number" id="yield-bump" value="3" min="0" max="30" step="0.5" onchange="calculate()" oninput="calculate()">
+          <span class="field-note">Estimated long-term yield improvement from improved soil organic matter</span>
+        </div>
+
+        <div class="field-group">
+          <label for="soil-savings">Fertilizer/Input Savings ($/acre/yr)</label>
+          <input type="number" id="soil-savings" value="35" min="0" onchange="calculate()" oninput="calculate()">
+          <span class="field-note">Nitrogen fixation and reduced soil amendment needs</span>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Results -->
+  <div id="results" class="results-panel">
+    <div class="results-header">
+      <div class="results-title">Your ROI Summary</div>
+      <div class="results-crop-badge" id="results-badge">Wine Grapes · Napa County</div>
+    </div>
+
+    <div class="results-body">
+
+      <div class="result-card">
+        <div class="result-label">Total Cover Crop Cost</div>
+        <div class="result-value negative" id="r-gross-cost">—</div>
+        <div class="result-sub" id="r-cost-sub">$375/acre × your acreage</div>
+      </div>
+
+      <div class="result-card">
+        <div class="result-label">AMP Credit (Year 1)</div>
+        <div class="result-value positive" id="r-incentives">—</div>
+        <div class="result-sub" id="r-incentive-sub">One-time establishment offset</div>
+      </div>
+
+      <div class="result-card">
+        <div class="result-label">Net Establishment Cost</div>
+        <div class="result-value" id="r-net-cost">—</div>
+        <div class="result-sub">After AMP credit applied</div>
+      </div>
+
+      <div class="result-card">
+        <div class="result-label">Annual Agronomic Benefits</div>
+        <div class="result-value positive" id="r-annual-benefits">—</div>
+        <div class="result-sub" id="r-benefits-sub">Water, inputs, weed control</div>
+      </div>
+
+      <div class="result-card">
+        <div class="result-label">Annual Yield Value Added</div>
+        <div class="result-value positive" id="r-yield-benefit">—</div>
+        <div class="result-sub" id="r-yield-sub">From soil health improvement</div>
+      </div>
+
+      <div class="result-card" id="r-csrp-card" style="display:none">
+        <div class="result-label">CSRP Annual Payment</div>
+        <div class="result-value positive" id="r-csrp-annual">—</div>
+        <div class="result-sub">$100/acre/yr while practice is maintained</div>
+      </div>
+
+      <div class="result-card highlight">
+        <div class="result-label">Payback Period</div>
+        <div class="result-value" id="r-payback">—</div>
+        <div class="result-sub">Years to recover net establishment cost</div>
+        <div class="roi-meter"><div class="roi-fill" id="r-roi-fill" style="width:0%"></div></div>
+      </div>
+
+    </div>
+
+    <!-- Breakdown -->
+    <div class="breakdown">
+      <div class="breakdown-title">Cost & Savings Breakdown</div>
+
+      <div class="breakdown-row">
+        <span class="breakdown-label">
+          <span class="breakdown-dot" style="background:#F4A27B"></span>
+          Perennial cover crop seed & establishment
+        </span>
+        <span class="breakdown-amount cost" id="b-cover-cost">—</span>
+      </div>
+      <div class="breakdown-row" id="b-amp-row">
+        <span class="breakdown-label">
+          <span class="breakdown-dot" style="background:#A8D5A2"></span>
+          AMP Program Credit
+        </span>
+        <span class="breakdown-amount savings" id="b-amp">—</span>
+      </div>
+      <div class="breakdown-row" id="b-csrp-row" style="display:none">
+        <span class="breakdown-label">
+          <span class="breakdown-dot" style="background:#A8D5A2"></span>
+          CSRP annual payment (recurring)
+        </span>
+        <span class="breakdown-amount savings" id="b-csrp">—</span>
+      </div>
+      <div class="breakdown-row">
+        <span class="breakdown-label">
+          <span class="breakdown-dot" style="background:#7BA05B"></span>
+          Annual water savings
+        </span>
+        <span class="breakdown-amount savings" id="b-water">—</span>
+      </div>
+      <div class="breakdown-row">
+        <span class="breakdown-label">
+          <span class="breakdown-dot" style="background:#7BA05B"></span>
+          Annual weed control reduction
+        </span>
+        <span class="breakdown-amount savings" id="b-weed">—</span>
+      </div>
+      <div class="breakdown-row">
+        <span class="breakdown-label">
+          <span class="breakdown-dot" style="background:#7BA05B"></span>
+          Annual fertilizer & input savings
+        </span>
+        <span class="breakdown-amount savings" id="b-soil">—</span>
+      </div>
+      <div class="breakdown-row">
+        <span class="breakdown-label">
+          <span class="breakdown-dot" style="background:#C8A96E"></span>
+          Annual yield value added
+        </span>
+        <span class="breakdown-amount savings" id="b-yield">—</span>
+      </div>
+
+      <div class="breakdown-total">
+        <span>10-Year Total Net Benefit</span>
+        <span id="b-total-10yr">—</span>
+      </div>
+    </div>
+
+    <!-- Benefits callout -->
+    <div class="benefits-strip">
+      <span class="benefits-icon">🌱</span>
+      <div class="benefits-text" id="benefits-note">
+        <strong>Additional co-benefits not captured above:</strong> Perennial cover crops improve soil water retention, reduce erosion, support beneficial insects and pollinators, and can improve wine grape quality through reduced vine stress. Carbon sequestration may unlock future carbon credit opportunities through programs like the California Healthy Soils Program.
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Source note -->
+  <div class="source-note">
+    <strong>Data sources:</strong> Costs and yields based on UC Davis Agricultural Issues Center / UCCE Cost & Return Studies for California almonds and wine grapes (2019–2024). Cover crop cost of $375/acre for perennial establishment. Program incentives as described by the USDA AMP program and California Soil Restoration Project. Agronomic benefit estimates are indicative only and will vary by operation. This tool is intended as a planning guide — consult your farm advisor and program administrators before making investment decisions.
+    <br><br>
+    UC Davis Cost Studies: <a href="https://coststudies.ucdavis.edu" target="_blank">coststudies.ucdavis.edu</a> &nbsp;|&nbsp;
+    AMP Program: <a href="https://www.nrcs.usda.gov" target="_blank">USDA NRCS</a> &nbsp;|&nbsp;
+    CA Soil Restoration: <a href="https://www.cdfa.ca.gov/oefi/healthysoils/" target="_blank">CDFA Healthy Soils</a>
+  </div>
+
+</main>
+
+<script>
+// County data: [typical yield, typical price, crop type]
+const COUNTY_DATA = {
+  // Wine Grape counties
+  'napa':           { yields: [4.0, 5.5], prices: [3000, 8950], region: 'North Coast · Crush District 4', crop: 'grapes' },
+  'sonoma':         { yields: [4.0, 6.75], prices: [1400, 3500], region: 'North Coast · Russian River Valley', crop: 'grapes' },
+  'mendocino':      { yields: [3.0, 5.0], prices: [900, 1800], region: 'North Coast', crop: 'grapes' },
+  'san-luis-obispo':{ yields: [3.5, 6.0], prices: [700, 1400], region: 'Central Coast', crop: 'grapes' },
+  'santa-barbara':  { yields: [3.0, 5.5], prices: [800, 1600], region: 'Central Coast / Santa Ynez', crop: 'grapes' },
+  'lodi-san-joaquin':{ yields: [7.0, 13.0], prices: [500, 900], region: 'San Joaquin Valley · Lodi', crop: 'grapes' },
+  // Almond counties
+  'fresno':     { yields: [1800, 2800], prices: [1.40, 2.00], region: 'San Joaquin Valley South', crop: 'almonds' },
+  'kern':       { yields: [1800, 2800], prices: [1.40, 2.00], region: 'San Joaquin Valley South', crop: 'almonds' },
+  'kings':      { yields: [1800, 2600], prices: [1.40, 1.90], region: 'San Joaquin Valley South', crop: 'almonds' },
+  'madera':     { yields: [1900, 2800], prices: [1.40, 2.00], region: 'San Joaquin Valley Central', crop: 'almonds' },
+  'merced':     { yields: [1900, 2900], prices: [1.45, 2.05], region: 'San Joaquin Valley North', crop: 'almonds' },
+  'stanislaus': { yields: [2000, 3000], prices: [1.45, 2.10], region: 'San Joaquin Valley North', crop: 'almonds' },
+  'tulare':     { yields: [1800, 2800], prices: [1.40, 1.95], region: 'San Joaquin Valley South', crop: 'almonds' },
+  'butte':      { yields: [1600, 2600], prices: [1.40, 2.00], region: 'Sacramento Valley', crop: 'almonds' },
+  'colusa':     { yields: [1600, 2600], prices: [1.40, 2.00], region: 'Sacramento Valley', crop: 'almonds' },
+  'glenn':      { yields: [1600, 2700], prices: [1.40, 2.00], region: 'Sacramento Valley', crop: 'almonds' },
+  'tehama':     { yields: [1600, 2600], prices: [1.40, 2.00], region: 'Sacramento Valley', crop: 'almonds' },
+};
+
+// UC Davis typical production costs ($/acre/year, cash costs)
+const PRODUCTION_COSTS = {
+  grapes: {
+    napa: 4200, sonoma: 3200, mendocino: 2200, 'san-luis-obispo': 2400, 'santa-barbara': 2200, 'lodi-san-joaquin': 1900
+  },
+  almonds: {
+    fresno: 2200, kern: 2200, kings: 2100, madera: 2150, merced: 2150, stanislaus: 2150,
+    tulare: 2100, butte: 1900, colusa: 1900, glenn: 1900, tehama: 1900
+  }
+};
+
+const COVER_CROP_COST = 375;
+const AMP_FREE_ACRES = 10;
+const AMP_ADDITIONAL_RATE = 100;
+const AMP_ADDITIONAL_MAX = 100;
+const CSRP_RATE = 100;
+
+function fmt(n) {
+  if (n === null || n === undefined || isNaN(n)) return '—';
+  const abs = Math.abs(n);
+  const sign = n < 0 ? '-' : '';
+  if (abs >= 1000000) return sign + '$' + (abs/1000000).toFixed(2) + 'M';
+  if (abs >= 10000) return sign + '$' + Math.round(abs).toLocaleString();
+  return sign + '$' + Math.round(abs).toLocaleString();
+}
+
+function fmtYrs(y) {
+  if (!isFinite(y) || y <= 0) return '< 1 yr';
+  if (y >= 30) return '30+ yrs';
+  return y.toFixed(1) + ' yrs';
+}
+
+function getCrop() {
+  return document.querySelector('input[name="crop"]:checked')?.value || 'grapes';
+}
+
+function updateCropUI() {
+  const crop = getCrop();
+  const county = document.getElementById('county').value;
+  const data = COUNTY_DATA[county];
+
+  // Card highlight
+  document.getElementById('grapes-card').classList.toggle('selected', crop === 'grapes');
+  document.getElementById('almonds-card').classList.toggle('selected', crop === 'almonds');
+
+  // Update yield/price labels
+  if (crop === 'almonds') {
+    document.getElementById('yield-label').textContent = 'Yield (lbs/acre, kernel)';
+    document.getElementById('price-label').textContent = 'Price ($/lb, kernel)';
+    document.getElementById('yield').value = 2400;
+    document.getElementById('price').value = 1.60;
+    document.getElementById('yield-note').textContent = 'Typical CA range: 1,600–3,400 lbs/acre (UC Davis 2024)';
+    document.getElementById('price-note').textContent = 'Market price per kernel pound (2024 study uses $1.60/lb)';
+  } else {
+    document.getElementById('yield-label').textContent = 'Yield (tons/acre)';
+    document.getElementById('price-label').textContent = 'Price ($/ton)';
+    document.getElementById('yield').value = 4.5;
+    document.getElementById('price').value = 1800;
+    document.getElementById('yield-note').textContent = 'Typical CA range: 3.5–7 tons/acre';
+    document.getElementById('price-note').textContent = 'Varies widely by AVA — Napa Cab up to $8,950/ton';
+  }
+
+  calculate();
+}
+
+function updateCountyInfo() {
+  const county = document.getElementById('county').value;
+  const data = COUNTY_DATA[county];
+  if (!data) return;
+
+  const infoEl = document.getElementById('county-info');
+  const crop = getCrop();
+
+  if (data.crop === 'grapes') {
+    infoEl.textContent = `${data.region} · Typical yield: ${data.yields[0]}–${data.yields[1]} tons/acre · Price range: $${data.prices[0].toLocaleString()}–$${data.prices[1].toLocaleString()}/ton (UC Davis)`;
+  } else {
+    infoEl.textContent = `${data.region} · Typical yield: ${data.yields[0].toLocaleString()}–${data.yields[1].toLocaleString()} lbs/acre · Price: $${data.prices[0]}–$${data.prices[1]}/lb kernel (UC Davis 2024)`;
+  }
+  infoEl.classList.add('visible');
+}
+
+function calculate() {
+  const crop = getCrop();
+  const county = document.getElementById('county').value;
+  const acres = parseFloat(document.getElementById('acres').value) || 0;
+  const yieldVal = parseFloat(document.getElementById('yield').value) || 0;
+  const price = parseFloat(document.getElementById('price').value) || 0;
+
+  const ampOn = document.getElementById('amp-toggle').checked;
+  const csrpOn = document.getElementById('csrp-toggle').checked;
+
+  const waterSavings = parseFloat(document.getElementById('water-savings').value) || 0;
+  const weedSavings = parseFloat(document.getElementById('weed-savings').value) || 0;
+  const yieldBump = parseFloat(document.getElementById('yield-bump').value) || 0;
+  const soilSavings = parseFloat(document.getElementById('soil-savings').value) || 0;
+
+  // Gross cover crop cost
+  const grossCost = acres * COVER_CROP_COST;
+
+  // AMP: one-time Year 1 establishment credit
+  let ampCredit = 0;
+  if (ampOn) {
+    const freeAcres = Math.min(acres, AMP_FREE_ACRES);
+    const additionalAcres = Math.max(0, Math.min(acres - AMP_FREE_ACRES, AMP_ADDITIONAL_MAX));
+    ampCredit = freeAcres * COVER_CROP_COST + additionalAcres * AMP_ADDITIONAL_RATE;
+  }
+
+  // Net establishment cost after AMP (one-time offset only)
+  const netCost = Math.max(0, grossCost - ampCredit);
+
+  // CSRP: recurring annual payment per acre while practice is maintained
+  const annualCsrp = csrpOn ? acres * CSRP_RATE : 0;
+
+  // Annual agronomic benefits
+  const annualWater = acres * waterSavings;
+  const annualWeed = acres * weedSavings;
+  const annualSoil = acres * soilSavings;
+
+  // Yield value added
+  const annualRevenue = acres * yieldVal * price;
+  const yieldValueAdded = annualRevenue * (yieldBump / 100);
+
+  // Total annual benefit includes CSRP recurring payments + agronomic + yield
+  const totalAnnualBenefit = annualWater + annualWeed + annualSoil + yieldValueAdded + annualCsrp;
+  const payback = totalAnnualBenefit > 0 ? netCost / totalAnnualBenefit : Infinity;
+
+  // 10-year net: 10 years of annual benefits minus net establishment cost
+  const tenYearNet = totalAnnualBenefit * 10 - netCost;
+
+  // Update display
+  const countyData = COUNTY_DATA[county];
+  const region = countyData ? countyData.region : county;
+  document.getElementById('results-badge').textContent =
+    (crop === 'grapes' ? 'Wine Grapes' : 'Almonds') + ' · ' + county.charAt(0).toUpperCase() + county.slice(1).replace(/-/g,' ') + ' County';
+
+  document.getElementById('r-gross-cost').textContent = fmt(grossCost);
+  document.getElementById('r-cost-sub').textContent = `$375/acre × ${acres} acres`;
+
+  // AMP: one-time credit
+  document.getElementById('r-incentives').textContent = ampOn ? fmt(ampCredit) : '$0';
+  document.getElementById('r-incentive-sub').textContent = ampOn
+    ? `${Math.min(acres, AMP_FREE_ACRES)} free acres + $100/acre on ${Math.max(0,Math.min(acres-AMP_FREE_ACRES,AMP_ADDITIONAL_MAX))} additional`
+    : 'Not enrolled';
+
+  document.getElementById('r-net-cost').textContent = fmt(netCost);
+  document.getElementById('r-net-cost').className = 'result-value ' + (netCost <= 0 ? 'positive' : 'negative');
+
+  document.getElementById('r-annual-benefits').textContent = fmt(annualWater + annualWeed + annualSoil);
+  document.getElementById('r-benefits-sub').textContent = `$${(waterSavings+weedSavings+soilSavings).toFixed(0)}/acre/yr × ${acres} acres`;
+  document.getElementById('r-yield-benefit').textContent = fmt(yieldValueAdded);
+  document.getElementById('r-yield-sub').textContent = `${yieldBump}% of annual gross revenue`;
+
+  // CSRP annual card
+  const csrpCard = document.getElementById('r-csrp-card');
+  csrpCard.style.display = csrpOn ? 'block' : 'none';
+  document.getElementById('r-csrp-annual').textContent = fmt(annualCsrp);
+
+  document.getElementById('r-payback').textContent = fmtYrs(payback);
+
+  // ROI fill bar (0–10 years → 100% fill, 10+ → proportionally less)
+  const fillPct = isFinite(payback) && payback > 0 ? Math.max(0, Math.min(100, (1 - (payback / 10)) * 100)) : (payback <= 0 ? 100 : 0);
+  document.getElementById('r-roi-fill').style.width = fillPct + '%';
+
+  // Breakdown
+  document.getElementById('b-cover-cost').textContent = fmt(-grossCost);
+  document.getElementById('b-amp').textContent = ampOn ? '+' + fmt(ampCredit) : '$0';
+  document.getElementById('b-amp-row').style.display = ampOn ? 'flex' : 'none';
+  document.getElementById('b-csrp').textContent = csrpOn ? '+' + fmt(annualCsrp) + '/yr' : '$0';
+  document.getElementById('b-csrp-row').style.display = csrpOn ? 'flex' : 'none';
+  document.getElementById('b-water').textContent = '+' + fmt(annualWater) + '/yr';
+  document.getElementById('b-weed').textContent = '+' + fmt(annualWeed) + '/yr';
+  document.getElementById('b-soil').textContent = '+' + fmt(annualSoil) + '/yr';
+  document.getElementById('b-yield').textContent = '+' + fmt(yieldValueAdded) + '/yr';
+
+  const tenYrLabel = tenYearNet >= 0 ? '+' + fmt(tenYearNet) : fmt(tenYearNet);
+  document.getElementById('b-total-10yr').textContent = tenYrLabel;
+  document.getElementById('b-total-10yr').style.color = tenYearNet >= 0 ? '#A8D5A2' : '#F4A27B';
+
+  updateCountyInfo();
+}
+
+// Initialize
+updateCountyInfo();
+calculate();
+</script>
+</body>
+</html>
